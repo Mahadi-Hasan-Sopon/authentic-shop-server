@@ -27,8 +27,22 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const productCollection = client.db("productDB").collection("products");
+
     app.get("/", (req, res) => {
       res.send("<h1><center>Hello Folks, Welcome to Backend.</center></h1>");
+    });
+
+    app.get("/products", async (req, res) => {
+      const products = await productCollection.find().toArray();
+      res.send(products);
+    });
+
+    app.post("/products/new", async (req, res) => {
+      const product = req.body;
+      const result = await productCollection.insertOne(product);
+      res.send(result);
+      console.log(`A document was inserted with the _id: ${result.insertedId}`);
     });
 
     // Send a ping to confirm a successful connection

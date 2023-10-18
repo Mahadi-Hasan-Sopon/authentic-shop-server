@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const { products } = require("./products");
+// const { products } = require("./products");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -41,6 +41,12 @@ async function run() {
       res.send(products);
     });
 
+    app.get("/trending", async (req, res) => {
+      const filter = { isNew: true };
+      const trendingProducts = await productCollection.find(filter).toArray();
+      res.send(trendingProducts);
+    });
+
     app.post("/products/new", async (req, res) => {
       const product = req.body;
       const result = await productCollection.insertOne(product);
@@ -55,7 +61,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);

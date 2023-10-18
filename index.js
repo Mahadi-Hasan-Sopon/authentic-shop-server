@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { products } = require("./products");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,7 +12,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.kx7txjc.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.6rxve42.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,6 +29,8 @@ async function run() {
     await client.connect();
 
     const productCollection = client.db("productDB").collection("products");
+    // const inputFakeData = await productCollection.insertMany(products);
+    // console.log(inputFakeData);
 
     app.get("/", (req, res) => {
       res.send("<h1><center>Hello Folks, Welcome to Backend.</center></h1>");
@@ -52,7 +55,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    // await client.close();
+    await client.close();
   }
 }
 run().catch(console.dir);

@@ -81,6 +81,36 @@ async function run() {
       console.log(`A document was inserted with the _id: ${result.insertedId}`);
     });
 
+    app.put("/product/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const { title, brand, category, price, image, rating, description } =
+        product;
+      const updatedProduct = {
+        $set: {
+          title,
+          brand,
+          category,
+          price,
+          image,
+          rating: { ...rating },
+          description,
+        },
+      };
+
+      const result = await productCollection.updateOne(
+        filter,
+        updatedProduct,
+        options
+      );
+      res.send(result);
+      console.log(
+        `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`
+      );
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

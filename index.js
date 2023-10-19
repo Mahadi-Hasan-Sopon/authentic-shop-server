@@ -61,7 +61,8 @@ async function run() {
 
     app.get("/products/brand/:brandName", async (req, res) => {
       const brandName = req.params.brandName;
-      const filter = { brand: brandName };
+      // const filter = { brand: brandName };
+      const filter = { brand: { $regex: new RegExp(brandName, "i") } };
       const brandProducts = await productCollection.find(filter).toArray();
       res.send(brandProducts);
     });

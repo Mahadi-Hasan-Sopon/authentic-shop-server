@@ -39,6 +39,8 @@ async function run() {
     // const inputFakeBrandData = await brandCollection.insertMany(brands);
     // console.log(inputFakeBrandData);
 
+    const cartItems = client.db("productDB").collection("cartItems");
+
     app.get("/", (req, res) => {
       res.send("<h1><center>Hello Folks, Welcome to Backend.</center></h1>");
     });
@@ -78,7 +80,13 @@ async function run() {
       const product = req.body;
       const result = await productCollection.insertOne(product);
       res.send(result);
-      console.log(`A document was inserted with the _id: ${result.insertedId}`);
+      console.log(`A product was inserted with the _id: ${result.insertedId}`);
+    });
+
+    app.post("/addToCart", async (req, res) => {
+      const product = req.body;
+      const result = await cartItems.insertOne(product);
+      res.send(result);
     });
 
     app.put("/product/update/:id", async (req, res) => {
@@ -107,7 +115,7 @@ async function run() {
       );
       res.send(result);
       console.log(
-        `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`
+        `${result.matchedCount} product(s) matched the filter, updated ${result.modifiedCount} product(s)`
       );
     });
 

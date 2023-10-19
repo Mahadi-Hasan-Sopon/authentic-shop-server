@@ -61,6 +61,11 @@ async function run() {
       res.send(trendingProducts);
     });
 
+    app.get("/cart", async (req, res) => {
+      const products = await cartItems.find().toArray();
+      res.send(products);
+    });
+
     app.get("/brand/:brandName", async (req, res) => {
       const brandName = req.params.brandName;
       // const filter = { brand: brandName };

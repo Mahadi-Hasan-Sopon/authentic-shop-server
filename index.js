@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { brands } = require("./brands");
 // const { products } = require("./products");
 
 const app = express();
@@ -29,8 +30,14 @@ async function run() {
     await client.connect();
 
     const productCollection = client.db("productDB").collection("products");
+
     // const inputFakeData = await productCollection.insertMany(products);
     // console.log(inputFakeData);
+
+    const brandCollection = client.db("productDB").collection("brands");
+
+    // const inputFakeBrandData = await brandCollection.insertMany(brands);
+    // console.log(inputFakeBrandData);
 
     app.get("/", (req, res) => {
       res.send("<h1><center>Hello Folks, Welcome to Backend.</center></h1>");
@@ -41,10 +48,22 @@ async function run() {
       res.send(products);
     });
 
+    app.get("/brands", async (req, res) => {
+      const brands = await brandCollection.find().toArray();
+      res.send(brands);
+    });
+
     app.get("/trending", async (req, res) => {
       const filter = { isNew: true };
       const trendingProducts = await productCollection.find(filter).toArray();
       res.send(trendingProducts);
+    });
+
+    app.get("/products/brand/:brandName", async (req, res) => {
+      const brandName = req.params.brandName;
+      const filter = { brand: brandName };
+      const brandProducts = await productCollection.find(filter).toArray();
+      res.send(brandProducts);
     });
 
     app.post("/products/new", async (req, res) => {

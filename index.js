@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { brands } = require("./brands");
 // const { products } = require("./products");
 
@@ -59,12 +59,19 @@ async function run() {
       res.send(trendingProducts);
     });
 
-    app.get("/products/brand/:brandName", async (req, res) => {
+    app.get("/brand/:brandName", async (req, res) => {
       const brandName = req.params.brandName;
       // const filter = { brand: brandName };
       const filter = { brand: { $regex: new RegExp(brandName, "i") } };
       const brandProducts = await productCollection.find(filter).toArray();
       res.send(brandProducts);
+    });
+
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const product = await productCollection.findOne(query);
+      res.send(product);
     });
 
     app.post("/products/new", async (req, res) => {

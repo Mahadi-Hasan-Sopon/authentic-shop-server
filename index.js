@@ -3,14 +3,19 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const { brands } = require("./brands");
+// const { brands } = require("./brands");
 // const { products } = require("./products");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://authentic-shop-f5f81.web.app"],
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.6rxve42.mongodb.net/?retryWrites=true&w=majority`;
@@ -63,7 +68,7 @@ async function run() {
 
     app.get("/cart", async (req, res) => {
       const products = await cartItems.find().toArray();
-      console.log(products);
+      // console.log(products);
       res.send(products);
     });
 
@@ -78,7 +83,9 @@ async function run() {
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
+      // const options = { projection: { _id: 0 } };
       const product = await productCollection.findOne(query);
+      // console.log(product);
       res.send(product);
     });
 
@@ -91,6 +98,11 @@ async function run() {
 
     app.post("/addToCart", async (req, res) => {
       const product = req.body;
+      // console.log(product);
+      const cursor = { _id: product._id };
+      const isExist = await cartItems.findOne(cursor);
+      console.log(isExist);
+
       const result = await cartItems.insertOne(product);
       res.send(result);
     });
@@ -100,8 +112,16 @@ async function run() {
       const product = req.body;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
-      const { title, brand, category, price, image, rating, description } =
-        product;
+      const {
+        title,
+        brand,
+        category,
+        price,
+        image,
+        rating,
+        stock,
+        description,
+      } = product;
       const updatedProduct = {
         $set: {
           title,
@@ -109,6 +129,7 @@ async function run() {
           category,
           price,
           image,
+          stock,
           rating: { ...rating },
           description,
         },

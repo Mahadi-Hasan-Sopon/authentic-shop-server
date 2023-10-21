@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://authentic-shop-f5f81.web.app"],
+    origin: ["http://localhost:5173", "https://authentic-shop-f5f81.web.app", "https://authentic-shop-f5f81.firebaseapp.com"],
   })
 );
 app.use(express.json());
